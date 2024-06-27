@@ -1,9 +1,6 @@
-package com.enzo.testemuralis.providers.ViaCepProvider.impl;
-
-import java.io.IOException;
+package com.enzo.testemuralis.providers.viacep.application;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -11,15 +8,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
-import com.enzo.testemuralis.providers.ViaCepProvider.abs.IViacepProvider;
-import com.enzo.testemuralis.providers.ViaCepProvider.dtos.EnderecoViacep;
+import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
+import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
 import com.google.gson.Gson;
 
 @Service
-public class ViacepProvider implements IViacepProvider {
+public class ViacepService implements ViacepGateway {
 
     @Override
-    public EnderecoViacep buscarEnderecoPorCep(String cep) throws ClientProtocolException, IOException {
+    public EnderecoViacep buscarEnderecoPorCep(String cep) {
         EnderecoViacep endereco = null;
 
         HttpGet request = new HttpGet("https://viacep.com.br/ws/" + cep + "/json/");
@@ -37,6 +34,8 @@ public class ViacepProvider implements IViacepProvider {
 
                 endereco = gson.fromJson(result, EnderecoViacep.class);
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar endereço por CEP: " + e.getMessage());
         }
         return endereco;
     }

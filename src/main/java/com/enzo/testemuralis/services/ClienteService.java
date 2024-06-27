@@ -19,12 +19,9 @@ public class ClienteService {
     public List<Cliente> findAll() {
         return clienteRepository.findAll();
     }
-    public Cliente findById(Long id) {
+    public Optional<Cliente> findById(Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
-        if (cliente.isEmpty()) {
-            throw new RuntimeException("Cliente não encontrado");
-        }
-        return cliente.get();
+        return cliente;
     }
 
     @Transactional

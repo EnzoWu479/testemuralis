@@ -3,6 +3,7 @@ package com.enzo.testemuralis.controllers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Endereco;
 import com.enzo.testemuralis.models.dto.ClienteRequestDTO;
+import com.enzo.testemuralis.models.dto.ClienteResponseDTO;
 import com.enzo.testemuralis.models.dto.ErrorDTO;
-import com.enzo.testemuralis.providers.ViaCepProvider.dtos.EnderecoViacep;
-import com.enzo.testemuralis.providers.ViaCepProvider.impl.ViacepProvider;
+import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
+import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
 import com.enzo.testemuralis.services.ClienteService;
 
 @RestController
@@ -31,7 +33,7 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
     @Autowired
-    private ViacepProvider viacepProvider;
+    private ViacepGateway viacepService;
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
@@ -44,8 +46,11 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            Cliente cliente = clienteService.findById(id);
-            return ResponseEntity.ok().body(cliente);
+            Optional<Cliente> cliente = clienteService.findById(id);
+            if (cliente.isEmpty()) {
+                
+            }
+            return ResponseEntity.ok().body(new ClienteResponseDTO(cliente.get()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
@@ -61,18 +66,18 @@ public class ClienteController {
         Endereco endereco = client.getEndereco();
 
         try {
-            EnderecoViacep enderecoViacep = viacepProvider.buscarEnderecoPorCep(endereco.getCep());
-            System.out.println(enderecoViacep.getLocalidade());
+            EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
+            System.out.println(enderecoViacep.localidade());
 
-            endereco.setLogradouro(enderecoViacep.getLogradouro());
-            endereco.setComplemento(enderecoViacep.getComplemento());
-            endereco.setCidade(enderecoViacep.getLocalidade());
+            endereco.setLogradouro(enderecoViacep.logradouro());
+            endereco.setComplemento(enderecoViacep.complemento());
+            endereco.setCidade(enderecoViacep.localidade());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ErrorDTO("CEP inválido"));
         }
 
         Cliente cliente = clienteService.save(client);
-        return ResponseEntity.ok().body(cliente);
+        return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -82,19 +87,18 @@ public class ClienteController {
         Endereco endereco = client.getEndereco();
 
         try {
-            EnderecoViacep enderecoViacep = viacepProvider.buscarEnderecoPorCep(endereco.getCep());
+            EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
 
-            endereco.setLogradouro(enderecoViacep.getLogradouro());
-            endereco.setComplemento(enderecoViacep.getComplemento());
-            endereco.setCidade(enderecoViacep.getLocalidade());
+            endereco.setLogradouro(enderecoViacep.logradouro());
+            endereco.setComplemento(enderecoViacep.complemento());
+            endereco.setCidade(enderecoViacep.localidade());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ErrorDTO("CEP inválido"));
         }
 
         try {
-
             Cliente cliente = clienteService.update(id, client);
-            return ResponseEntity.ok().body(cliente);
+            return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
