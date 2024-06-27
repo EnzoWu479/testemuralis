@@ -67,7 +67,6 @@ public class ClienteController {
 
         try {
             EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
-            System.out.println(enderecoViacep.localidade());
 
             endereco.setLogradouro(enderecoViacep.logradouro());
             endereco.setComplemento(enderecoViacep.complemento());
