@@ -48,9 +48,6 @@ public class ClienteController {
     public ResponseEntity<Response<ClienteResponseDTO>> getById(@PathVariable Long id) {
         try {
             Optional<Cliente> cliente = clienteService.findById(id);
-            if (cliente.isEmpty()) {
-
-            }
             return ResponseEntity.ok().body(Response.ok(new ClienteResponseDTO(cliente.get())));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
@@ -60,45 +57,39 @@ public class ClienteController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
     public ResponseEntity<Response<ClienteResponseDTO>> create(@RequestBody ClienteRequestDTO object) {
-        Cliente client = new Cliente(object);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime now = LocalDateTime.now();
-        client.setDataCadastro(dtf.format(now));
-        Endereco endereco = client.getEndereco();
 
         try {
+            Cliente client = new Cliente(object);
+            client.setDataCadastro(dtf.format(now));
+            Endereco endereco = client.getEndereco();
             EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
 
             endereco.setLogradouro(enderecoViacep.logradouro());
             endereco.setComplemento(enderecoViacep.complemento());
             endereco.setCidade(enderecoViacep.localidade());
+            Cliente cliente = clienteService.save(client);
+            return ResponseEntity.ok().body(
+                    Response.ok(new ClienteResponseDTO(cliente)));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.error("CEP inválido"));
+            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
         }
-
-        Cliente cliente = clienteService.save(client);
-        return ResponseEntity.ok().body(
-                Response.ok(new ClienteResponseDTO(cliente)));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
     public ResponseEntity<Response<ClienteResponseDTO>> update(@PathVariable Long id,
             @RequestBody ClienteRequestDTO object) {
-        Cliente client = new Cliente(object);
-        Endereco endereco = client.getEndereco();
-
         try {
+            Cliente client = new Cliente(object);
+            Endereco endereco = client.getEndereco();
             EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
 
             endereco.setLogradouro(enderecoViacep.logradouro());
             endereco.setComplemento(enderecoViacep.complemento());
             endereco.setCidade(enderecoViacep.localidade());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.error("CEP inválido"));
-        }
 
-        try {
             Cliente cliente = clienteService.update(id, client);
             return ResponseEntity.ok().body(
                     Response.ok(new ClienteResponseDTO(cliente)));

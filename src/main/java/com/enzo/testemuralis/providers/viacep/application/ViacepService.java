@@ -14,6 +14,9 @@ import com.google.gson.Gson;
 
 @Service
 public class ViacepService implements ViacepGateway {
+    class ViacepError {
+        boolean erro;
+    }
 
     @Override
     public EnderecoViacep buscarEnderecoPorCep(String cep) {
@@ -32,10 +35,16 @@ public class ViacepService implements ViacepGateway {
 
                 Gson gson = new Gson();
 
+                ViacepError viacepError = gson.fromJson(result, ViacepError.class);
+
+                if (viacepError.erro) {
+                    throw new RuntimeException("CEP inválido");
+                }
+
                 endereco = gson.fromJson(result, EnderecoViacep.class);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar endereço por CEP: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         return endereco;
     }

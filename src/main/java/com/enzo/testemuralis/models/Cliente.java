@@ -1,5 +1,7 @@
 package com.enzo.testemuralis.models;
 
+import java.util.Objects;
+
 import com.enzo.testemuralis.dto.ClienteRequestDTO;
 
 import jakarta.persistence.CascadeType;
@@ -45,9 +47,25 @@ public class Cliente {
     private Endereco endereco;
 
     public Cliente(ClienteRequestDTO clienteRequestDTO) {
-        this.nome = clienteRequestDTO.nome();
-        this.dataCadastro = clienteRequestDTO.dataCadastro();
-        this.contato = new Contato(clienteRequestDTO.contato());
-        this.endereco = new Endereco(clienteRequestDTO.endereco());
+        setNome(clienteRequestDTO.nome());
+        setContato(new Contato(clienteRequestDTO.contato()));
+        setEndereco(new Endereco(clienteRequestDTO.endereco()));
+    }
+
+    public void setNome(String nome) {
+        Objects.requireNonNull(nome, "Nome não pode ser nulo");
+        if (nome.isBlank()) {
+            throw new IllegalArgumentException("Nome não pode ser vazio");
+        }
+        this.nome = nome;
+    }
+
+    public void setDataCadastro(String dataCadastro) {
+        if (!dataCadastro.isBlank()) {
+            if (!dataCadastro.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                throw new IllegalArgumentException("Data de cadastro inválida (formato esperado: yyyy-MM-dd)");
+            }
+            this.dataCadastro = dataCadastro;
+        }
     }
 }

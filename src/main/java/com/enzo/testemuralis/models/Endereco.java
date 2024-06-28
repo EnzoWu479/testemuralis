@@ -1,5 +1,7 @@
 package com.enzo.testemuralis.models;
 
+import java.util.Objects;
+
 import com.enzo.testemuralis.dto.EnderecoRequestDTO;
 
 import jakarta.persistence.Column;
@@ -44,10 +46,32 @@ public class Endereco {
     private String complemento;
 
     public Endereco(EnderecoRequestDTO enderecoRequestDTO) {
-        this.cep = enderecoRequestDTO.cep();
-        this.logradouro = enderecoRequestDTO.logradouro();
-        this.cidade = enderecoRequestDTO.cidade();
-        this.numero = enderecoRequestDTO.numero();
-        this.complemento = enderecoRequestDTO.complemento();
+        setCep(enderecoRequestDTO.cep());
+        setLogradouro(enderecoRequestDTO.logradouro());
+        setCidade(enderecoRequestDTO.cidade());
+        setNumero(enderecoRequestDTO.numero());
+        setComplemento(enderecoRequestDTO.complemento());
+    }
+
+    public void setCep(String cep) {
+        Objects.requireNonNull(cep, "CEP não pode ser nulo");
+        if (cep.isBlank()) {
+            throw new IllegalArgumentException("CEP não pode ser vazio");
+        }
+        cep = cep.replaceAll("[^0-9]", "");
+        if (cep.length() != 8) {
+            throw new IllegalArgumentException("CEP deve conter 8 caracteres");
+        }
+        this.cep = cep;
+    }
+    public void setNumero(String numero) {
+        Objects.requireNonNull(numero, "Número não pode ser nulo");
+        if (numero.isBlank()) {
+            throw new IllegalArgumentException("Número não pode ser vazio");
+        }
+        if (!numero.matches("[0-9]+")) {
+            throw new IllegalArgumentException("Número deve conter apenas números");
+        }
+        this.numero = numero;
     }
 }
