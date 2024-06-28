@@ -66,6 +66,7 @@ public class ClienteController {
         endereco.setLogradouro(enderecoViacep.logradouro());
         endereco.setComplemento(enderecoViacep.complemento());
         endereco.setCidade(enderecoViacep.localidade());
+        
         Cliente cliente = clienteService.save(client);
         return ResponseEntity.ok().body(
                 Response.ok(new ClienteResponseDTO(cliente)));

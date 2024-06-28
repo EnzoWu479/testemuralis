@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.enzo.testemuralis.models.Cliente;
+import com.enzo.testemuralis.models.Contato;
+import com.enzo.testemuralis.models.Endereco;
 import com.enzo.testemuralis.repositories.ClienteRepository;
 
 import jakarta.transaction.Transactional;
@@ -19,6 +21,7 @@ public class ClienteService {
     public List<Cliente> findAll() {
         return clienteRepository.findAll();
     }
+
     public Optional<Cliente> findById(Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
         return cliente;
@@ -40,15 +43,23 @@ public class ClienteService {
         Cliente clienteExtraido = clienteSalvo.get();
 
         clienteExtraido.setNome(cliente.getNome());
-        
-        clienteExtraido.getContato().setTexto(cliente.getContato().getTexto());
-        clienteExtraido.getContato().setTipo(cliente.getContato().getTipo());
 
-        clienteExtraido.getEndereco().setCep(cliente.getEndereco().getCep());
-        clienteExtraido.getEndereco().setCidade(cliente.getEndereco().getCidade());
-        clienteExtraido.getEndereco().setComplemento(cliente.getEndereco().getComplemento());
-        clienteExtraido.getEndereco().setLogradouro(cliente.getEndereco().getLogradouro());
-        clienteExtraido.getEndereco().setNumero(cliente.getEndereco().getNumero());
+        clienteExtraido.setContato(
+                new Contato(
+                        clienteExtraido.getContato().getId(),
+                        cliente.getContato().getTipo(),
+                        cliente.getContato().getTexto()));
+
+        clienteExtraido.setEndereco(
+                new Endereco(
+                        clienteExtraido.getEndereco().getId(),
+                        cliente.getEndereco().getCep(),
+                        cliente.getEndereco().getLogradouro(),
+                        cliente.getEndereco().getCidade(),
+                        cliente.getEndereco().getNumero(),
+                        cliente.getEndereco().getComplemento()));
+
+        clienteRepository.save(clienteExtraido);
 
         return clienteExtraido;
     }
