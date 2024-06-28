@@ -1,6 +1,6 @@
 package com.enzo.testemuralis.models;
 
-import com.enzo.testemuralis.models.dto.ContatoRequestDTO;
+import com.enzo.testemuralis.dto.ContatoRequestDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

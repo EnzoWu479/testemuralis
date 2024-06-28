@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.enzo.testemuralis.dto.ClienteRequestDTO;
+import com.enzo.testemuralis.dto.ClienteResponseDTO;
+import com.enzo.testemuralis.dto.Response;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Endereco;
-import com.enzo.testemuralis.models.dto.ClienteRequestDTO;
-import com.enzo.testemuralis.models.dto.ClienteResponseDTO;
-import com.enzo.testemuralis.models.dto.ErrorDTO;
 import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
 import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
 import com.enzo.testemuralis.services.ClienteService;
@@ -37,28 +37,29 @@ public class ClienteController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<Response<ClienteResponseDTO[]>> getAll() {
         List<Cliente> clientes = clienteService.findAll();
-        return ResponseEntity.ok().body(clientes);
+        return ResponseEntity.ok().body(Response.ok(
+                clientes.stream().map(ClienteResponseDTO::new).toArray(ClienteResponseDTO[]::new)));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    public ResponseEntity<Response<ClienteResponseDTO>> getById(@PathVariable Long id) {
         try {
             Optional<Cliente> cliente = clienteService.findById(id);
             if (cliente.isEmpty()) {
-                
+
             }
-            return ResponseEntity.ok().body(new ClienteResponseDTO(cliente.get()));
+            return ResponseEntity.ok().body(Response.ok(new ClienteResponseDTO(cliente.get())));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
         }
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody ClienteRequestDTO object) {
+    public ResponseEntity<Response<ClienteResponseDTO>> create(@RequestBody ClienteRequestDTO object) {
         Cliente client = new Cliente(object);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime now = LocalDateTime.now();
@@ -72,16 +73,18 @@ public class ClienteController {
             endereco.setComplemento(enderecoViacep.complemento());
             endereco.setCidade(enderecoViacep.localidade());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorDTO("CEP inválido"));
+            return ResponseEntity.badRequest().body(Response.error("CEP inválido"));
         }
 
         Cliente cliente = clienteService.save(client);
-        return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
+        return ResponseEntity.ok().body(
+                Response.ok(new ClienteResponseDTO(cliente)));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ClienteRequestDTO object) {
+    public ResponseEntity<Response<ClienteResponseDTO>> update(@PathVariable Long id,
+            @RequestBody ClienteRequestDTO object) {
         Cliente client = new Cliente(object);
         Endereco endereco = client.getEndereco();
 
@@ -92,21 +95,22 @@ public class ClienteController {
             endereco.setComplemento(enderecoViacep.complemento());
             endereco.setCidade(enderecoViacep.localidade());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorDTO("CEP inválido"));
+            return ResponseEntity.badRequest().body(Response.error("CEP inválido"));
         }
 
         try {
             Cliente cliente = clienteService.update(id, client);
-            return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
+            return ResponseEntity.ok().body(
+                    Response.ok(new ClienteResponseDTO(cliente)));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
         }
 
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<Response<ClienteResponseDTO>> delete(@PathVariable Long id) {
         clienteService.delete(id);
         return ResponseEntity.ok().build();
     }

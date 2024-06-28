@@ -1,4 +1,4 @@
-package com.enzo.testemuralis.models.dto;
+package com.enzo.testemuralis.dto;
 
 public record EnderecoRequestDTO(
     Long id,

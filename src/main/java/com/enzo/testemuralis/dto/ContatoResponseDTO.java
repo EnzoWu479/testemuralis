@@ -1,4 +1,4 @@
-package com.enzo.testemuralis.models.dto;
+package com.enzo.testemuralis.dto;
 
 import com.enzo.testemuralis.models.Contato;
 

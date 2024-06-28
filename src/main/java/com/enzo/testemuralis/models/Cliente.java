@@ -1,6 +1,6 @@
 package com.enzo.testemuralis.models;
 
-import com.enzo.testemuralis.models.dto.ClienteRequestDTO;
+import com.enzo.testemuralis.dto.ClienteRequestDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
