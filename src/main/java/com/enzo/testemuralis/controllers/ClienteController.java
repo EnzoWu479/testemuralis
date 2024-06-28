@@ -46,12 +46,11 @@ public class ClienteController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}")
     public ResponseEntity<Response<ClienteResponseDTO>> getById(@PathVariable Long id) {
-        try {
-            Optional<Cliente> cliente = clienteService.findById(id);
-            return ResponseEntity.ok().body(Response.ok(new ClienteResponseDTO(cliente.get())));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
+        Optional<Cliente> cliente = clienteService.findById(id);
+        if (!cliente.isPresent()) {
+            throw new RuntimeException("Cliente não encontrado");
         }
+        return ResponseEntity.ok().body(Response.ok(new ClienteResponseDTO(cliente.get())));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -59,43 +58,34 @@ public class ClienteController {
     public ResponseEntity<Response<ClienteResponseDTO>> create(@RequestBody ClienteRequestDTO object) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime now = LocalDateTime.now();
+        Cliente client = new Cliente(object);
+        client.setDataCadastro(dtf.format(now));
+        Endereco endereco = client.getEndereco();
+        EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
 
-        try {
-            Cliente client = new Cliente(object);
-            client.setDataCadastro(dtf.format(now));
-            Endereco endereco = client.getEndereco();
-            EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
-
-            endereco.setLogradouro(enderecoViacep.logradouro());
-            endereco.setComplemento(enderecoViacep.complemento());
-            endereco.setCidade(enderecoViacep.localidade());
-            Cliente cliente = clienteService.save(client);
-            return ResponseEntity.ok().body(
-                    Response.ok(new ClienteResponseDTO(cliente)));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
-        }
+        endereco.setLogradouro(enderecoViacep.logradouro());
+        endereco.setComplemento(enderecoViacep.complemento());
+        endereco.setCidade(enderecoViacep.localidade());
+        Cliente cliente = clienteService.save(client);
+        return ResponseEntity.ok().body(
+                Response.ok(new ClienteResponseDTO(cliente)));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
     public ResponseEntity<Response<ClienteResponseDTO>> update(@PathVariable Long id,
             @RequestBody ClienteRequestDTO object) {
-        try {
-            Cliente client = new Cliente(object);
-            Endereco endereco = client.getEndereco();
-            EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
+        Cliente client = new Cliente(object);
+        Endereco endereco = client.getEndereco();
+        EnderecoViacep enderecoViacep = viacepService.buscarEnderecoPorCep(endereco.getCep());
 
-            endereco.setLogradouro(enderecoViacep.logradouro());
-            endereco.setComplemento(enderecoViacep.complemento());
-            endereco.setCidade(enderecoViacep.localidade());
+        endereco.setLogradouro(enderecoViacep.logradouro());
+        endereco.setComplemento(enderecoViacep.complemento());
+        endereco.setCidade(enderecoViacep.localidade());
 
-            Cliente cliente = clienteService.update(id, client);
-            return ResponseEntity.ok().body(
-                    Response.ok(new ClienteResponseDTO(cliente)));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
-        }
+        Cliente cliente = clienteService.update(id, client);
+        return ResponseEntity.ok().body(
+                Response.ok(new ClienteResponseDTO(cliente)));
 
     }
 
