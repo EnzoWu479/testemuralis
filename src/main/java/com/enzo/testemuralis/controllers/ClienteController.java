@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.enzo.testemuralis.dto.ClienteRequestDTO;
@@ -37,8 +38,13 @@ public class ClienteController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
-    public ResponseEntity<Response<ClienteResponseDTO[]>> getAll() {
-        List<Cliente> clientes = clienteService.findAll();
+    public ResponseEntity<Response<ClienteResponseDTO[]>> getAll(@RequestParam(required = false) String name){
+        List<Cliente> clientes;
+        if (name != null && !name.isEmpty()) {
+            clientes = clienteService.findByNome(name);
+        } else {
+            clientes = clienteService.findAll();
+        } 
         return ResponseEntity.ok().body(Response.ok(
                 clientes.stream().map(ClienteResponseDTO::new).toArray(ClienteResponseDTO[]::new)));
     }

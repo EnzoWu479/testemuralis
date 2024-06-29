@@ -21,6 +21,9 @@ public class ClienteService {
     public List<Cliente> findAll() {
         return clienteRepository.findAll();
     }
+    public List<Cliente> findByNome(String nome) {
+        return clienteRepository.findByNome(nome);
+    }
 
     public Optional<Cliente> findById(Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
