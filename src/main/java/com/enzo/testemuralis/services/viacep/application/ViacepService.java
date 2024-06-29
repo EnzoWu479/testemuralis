@@ -1,4 +1,4 @@
-package com.enzo.testemuralis.providers.viacep.application;
+package com.enzo.testemuralis.services.viacep.application;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -8,8 +8,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
-import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
-import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
+import com.enzo.testemuralis.services.viacep.adapter.ViacepGateway;
+import com.enzo.testemuralis.services.viacep.dtos.EnderecoViacep;
 import com.google.gson.Gson;
 
 @Service

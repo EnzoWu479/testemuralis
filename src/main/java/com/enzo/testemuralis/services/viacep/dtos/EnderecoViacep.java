@@ -1,4 +1,4 @@
-package com.enzo.testemuralis.providers.viacep.dtos;
+package com.enzo.testemuralis.services.viacep.dtos;
 
 public record EnderecoViacep(
         String cep,

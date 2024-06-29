@@ -1,16 +1,15 @@
-package com.enzo.testemuralis.providers.viacep.application;
+package com.enzo.testemuralis.services.viacep;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
-import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
+import com.enzo.testemuralis.services.viacep.adapter.ViacepGateway;
+import com.enzo.testemuralis.services.viacep.dtos.EnderecoViacep;
 
 @SpringBootTest
 public class ViacepServiceTest {

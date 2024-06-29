@@ -22,8 +22,8 @@ import com.enzo.testemuralis.dto.ClienteResponseDTO;
 import com.enzo.testemuralis.dto.Response;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Endereco;
-import com.enzo.testemuralis.providers.viacep.adapter.ViacepGateway;
-import com.enzo.testemuralis.providers.viacep.dtos.EnderecoViacep;
+import com.enzo.testemuralis.services.viacep.adapter.ViacepGateway;
+import com.enzo.testemuralis.services.viacep.dtos.EnderecoViacep;
 import com.enzo.testemuralis.services.ClienteService;
 
 @RestController
