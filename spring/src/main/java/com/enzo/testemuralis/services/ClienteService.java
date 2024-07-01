@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.enzo.testemuralis.exceptions.BadRequestException;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Contato;
 import com.enzo.testemuralis.models.Endereco;
@@ -25,9 +26,12 @@ public class ClienteService {
         return clienteRepository.findByNome(nome);
     }
 
-    public Optional<Cliente> findById(Long id) {
+    public Cliente findById(Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
-        return cliente;
+        if (cliente.isEmpty()) {
+            throw new BadRequestException("Cliente não encontrado");
+        }
+        return cliente.get();
     }
 
     @Transactional
@@ -38,12 +42,7 @@ public class ClienteService {
 
     @Transactional
     public Cliente update(Long id, Cliente cliente) {
-        Optional<Cliente> clienteSalvo = clienteRepository.findById(id);
-
-        if (clienteSalvo.isEmpty()) {
-            throw new RuntimeException("Cliente não encontrado");
-        }
-        Cliente clienteExtraido = clienteSalvo.get();
+        Cliente clienteExtraido = findById(id);
 
         clienteExtraido.setNome(cliente.getNome());
 

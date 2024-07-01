@@ -1,7 +1,9 @@
 package com.enzo.testemuralis.services;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.enzo.testemuralis.exceptions.BadRequestException;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Contato;
 import com.enzo.testemuralis.models.Endereco;
@@ -30,13 +33,13 @@ public class ClienteServiceTest {
                         null, "00000000", "Logradouro teste", "Cidade Teste", "12345678", "Complemento Teste"));
         clienteService.save(cliente);
 
-        assertTrue(clienteService.findById(1l).isPresent());
+        assertEquals(clienteService.findById(1l).getId(), 1l);
     }
 
     @Test
     @DisplayName("Quando buscar por id, espero que não encontre")
     void when_getId_expect_notFound() {
-        assertFalse(clienteService.findById(2l).isPresent());
+        assertThrows(BadRequestException.class, () -> clienteService.findById(2l));
     }
 
     @Test
@@ -68,13 +71,13 @@ public class ClienteServiceTest {
                         null, "00000000", "Logradouro teste", "Cidade Teste", "12345678", "Complemento Teste"));
         clienteService.save(cliente);
 
-        assertEquals(clienteService.findById(1l).get().getNome(), "Cliente Teste");
+        assertEquals(clienteService.findById(1l).getNome(), "Cliente Teste");
 
         cliente.setNome("Cliente Teste 2");
 
         clienteService.update(1l, cliente);
 
-        assertEquals(clienteService.findById(1l).get().getNome(), "Cliente Teste 2");
+        assertEquals(clienteService.findById(1l).getNome(), "Cliente Teste 2");
     }
 
     @Test
@@ -87,10 +90,10 @@ public class ClienteServiceTest {
                         null, "00000000", "Logradouro teste", "Cidade Teste", "12345678", "Complemento Teste"));
         clienteService.save(cliente);
 
-        assertTrue(clienteService.findById(1l).isPresent());
+        assertDoesNotThrow(() -> clienteService.findById(1l));
 
         clienteService.delete(1l);
 
-        assertFalse(clienteService.findById(1l).isPresent());
+        assertThrows(BadRequestException.class, () -> clienteService.findById(1l));
     }
 }

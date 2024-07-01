@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.enzo.testemuralis.exceptions.BadRequestException;
 import com.enzo.testemuralis.services.viacep.adapter.ViacepGateway;
 import com.enzo.testemuralis.services.viacep.dtos.EnderecoViacep;
 
@@ -28,7 +29,7 @@ public class ViacepServiceTest {
     @Test
     @DisplayName("Quando buscar por CEP, espero que de erro")
     void when_getCep_expect_error() {
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(BadRequestException.class, () -> {
             viacepService.buscarEnderecoPorCep("0000000");
         });
     }

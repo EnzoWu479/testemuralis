@@ -3,7 +3,6 @@ package com.enzo.testemuralis.controllers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.enzo.testemuralis.dto.ClienteRequestDTO;
 import com.enzo.testemuralis.dto.ClienteResponseDTO;
-import com.enzo.testemuralis.dto.Response;
 import com.enzo.testemuralis.models.Cliente;
 import com.enzo.testemuralis.models.Endereco;
+import com.enzo.testemuralis.services.ClienteService;
 import com.enzo.testemuralis.services.viacep.adapter.ViacepGateway;
 import com.enzo.testemuralis.services.viacep.dtos.EnderecoViacep;
-import com.enzo.testemuralis.services.ClienteService;
 
 @RestController
 @RequestMapping("/clientes")
@@ -38,30 +36,27 @@ public class ClienteController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
-    public ResponseEntity<Response<ClienteResponseDTO[]>> getAll(@RequestParam(required = false) String name){
+    public ResponseEntity<ClienteResponseDTO[]> getAll(@RequestParam(required = false) String name){
         List<Cliente> clientes;
         if (name != null && !name.isEmpty()) {
             clientes = clienteService.findByNome(name);
         } else {
             clientes = clienteService.findAll();
         } 
-        return ResponseEntity.ok().body(Response.ok(
-                clientes.stream().map(ClienteResponseDTO::new).toArray(ClienteResponseDTO[]::new)));
+        return ResponseEntity.ok().body( 
+                clientes.stream().map(ClienteResponseDTO::new).toArray(ClienteResponseDTO[]::new));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ClienteResponseDTO>> getById(@PathVariable Long id) {
-        Optional<Cliente> cliente = clienteService.findById(id);
-        if (!cliente.isPresent()) {
-            throw new RuntimeException("Cliente não encontrado");
-        }
-        return ResponseEntity.ok().body(Response.ok(new ClienteResponseDTO(cliente.get())));
+    public ResponseEntity<ClienteResponseDTO> getById(@PathVariable Long id) {
+        Cliente cliente = clienteService.findById(id);
+        return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
-    public ResponseEntity<Response<ClienteResponseDTO>> create(@RequestBody ClienteRequestDTO object) {
+    public ResponseEntity<ClienteResponseDTO> create(@RequestBody ClienteRequestDTO object) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime now = LocalDateTime.now();
         Cliente client = new Cliente(object);
@@ -74,13 +69,12 @@ public class ClienteController {
         endereco.setCidade(enderecoViacep.localidade());
         
         Cliente cliente = clienteService.save(client);
-        return ResponseEntity.ok().body(
-                Response.ok(new ClienteResponseDTO(cliente)));
+        return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
-    public ResponseEntity<Response<ClienteResponseDTO>> update(@PathVariable Long id,
+    public ResponseEntity<ClienteResponseDTO> update(@PathVariable Long id,
             @RequestBody ClienteRequestDTO object) {
         Cliente client = new Cliente(object);
         Endereco endereco = client.getEndereco();
@@ -91,14 +85,13 @@ public class ClienteController {
         endereco.setCidade(enderecoViacep.localidade());
 
         Cliente cliente = clienteService.update(id, client);
-        return ResponseEntity.ok().body(
-                Response.ok(new ClienteResponseDTO(cliente)));
+        return ResponseEntity.ok().body(new ClienteResponseDTO(cliente));
 
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<ClienteResponseDTO>> delete(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponseDTO> delete(@PathVariable Long id) {
         clienteService.delete(id);
         return ResponseEntity.ok().build();
     }
