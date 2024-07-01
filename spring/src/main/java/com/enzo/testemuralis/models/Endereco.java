@@ -3,6 +3,7 @@ package com.enzo.testemuralis.models;
 import java.util.Objects;
 
 import com.enzo.testemuralis.dto.EnderecoRequestDTO;
+import com.enzo.testemuralis.exceptions.BadRequestException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,23 +55,22 @@ public class Endereco {
     }
 
     public void setCep(String cep) {
-        Objects.requireNonNull(cep, "CEP não pode ser nulo");
         if (cep.isBlank()) {
-            throw new IllegalArgumentException("CEP não pode ser vazio");
+            throw new BadRequestException("CEP não pode ser vazio");
         }
+        
         cep = cep.replaceAll("[^0-9]", "");
         if (cep.length() != 8) {
-            throw new IllegalArgumentException("CEP deve conter 8 caracteres");
+            throw new BadRequestException("CEP deve conter 8 caracteres");
         }
         this.cep = cep;
     }
     public void setNumero(String numero) {
-        Objects.requireNonNull(numero, "Número não pode ser nulo");
         if (numero.isBlank()) {
-            throw new IllegalArgumentException("Número não pode ser vazio");
+            throw new BadRequestException("Número não pode ser vazio");
         }
         if (!numero.matches("[0-9]+")) {
-            throw new IllegalArgumentException("Número deve conter apenas números");
+            throw new BadRequestException("Número deve conter apenas números");
         }
         this.numero = numero;
     }
