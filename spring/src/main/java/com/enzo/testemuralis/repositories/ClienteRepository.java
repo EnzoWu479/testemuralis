@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.enzo.testemuralis.models.Cliente;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
-    List<Cliente> findByNome(String nome);
+    List<Cliente> findByNomeContaining(String nome);
 }

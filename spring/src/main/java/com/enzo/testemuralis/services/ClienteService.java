@@ -23,7 +23,7 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
     public List<Cliente> findByNome(String nome) {
-        return clienteRepository.findByNome(nome);
+        return clienteRepository.findByNomeContaining(nome);
     }
 
     public Cliente findById(Long id) {
