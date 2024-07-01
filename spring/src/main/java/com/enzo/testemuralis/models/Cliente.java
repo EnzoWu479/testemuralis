@@ -68,4 +68,16 @@ public class Cliente {
             this.dataCadastro = dataCadastro;
         }
     }
+    public void setContato(Contato contato) {
+        if (Objects.isNull(contato)) {
+            throw new BadRequestException("Contato não pode ser nulo");
+        }
+        this.contato = contato;
+    }
+    public void setEndereco(Endereco endereco) {
+        if (Objects.isNull(endereco)) {
+            throw new BadRequestException("Endereço não pode ser nulo");
+        }
+        this.endereco = endereco;
+    }
 }

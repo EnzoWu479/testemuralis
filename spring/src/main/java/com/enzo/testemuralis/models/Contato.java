@@ -1,6 +1,7 @@
 package com.enzo.testemuralis.models;
 
 import com.enzo.testemuralis.dto.ContatoRequestDTO;
+import com.enzo.testemuralis.exceptions.BadRequestException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,12 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = Contato.TABLE_NAME)
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -35,7 +34,24 @@ public class Contato {
     private String texto;
 
     public Contato(ContatoRequestDTO contatoRequestDTO) {
-        this.tipo = contatoRequestDTO.tipo();
-        this.texto = contatoRequestDTO.texto();
+        this.setTipo(contatoRequestDTO.tipo());
+        this.setTexto(contatoRequestDTO.texto());
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public void setTipo(String tipo) {
+        if (tipo == null || tipo.isBlank()) {
+            throw new BadRequestException("Tipo não pode ser nulo ou vazio");
+        }
+        this.tipo = tipo;
+    }
+    public void setTexto(String texto) {
+        if (texto == null || texto.isBlank()) {
+            throw new BadRequestException("Texto não pode ser nulo ou vazio");
+        }
+        this.texto = texto;
+    }
+
 }
